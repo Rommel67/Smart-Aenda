@@ -1,0 +1,21 @@
+{
+  "name": "mia-agenda-personale",
+  "version": "2.0.0",
+  "description": "Agenda personale per musica, richiami, reminder e agenti IA",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No tests\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/local-notifications": "^8.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
