@@ -1,42 +1,59 @@
-name: Build Smart Agenda APK
+name: Build APK
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Scarica progetto
+      - name: Checkout codice
         uses: actions/checkout@v4
 
-      - name: Installa Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
 
-      - name: Installa dipendenze
+      - name: Installa dipendenze npm
         run: npm install
 
-      - name: Installa Java
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '21'
+          cache: 'gradle'
 
-      - name: Permesso Gradle
+      - name: Pulisci vecchi asset Android
+        run: rm -rf android/app/src/main/assets/public
+
+      - name: Sincronizza Capacitor Android
+        run: npx cap sync android
+
+      - name: Verifica V2 nell'APK
+        run: |
+          grep -q "⚙️ Impostazioni" android/app/src/main/assets/public/index.html
+          grep -q "Test notifica tra 10 secondi" android/app/src/main/assets/public/index.html
+          test -f android/app/src/main/res/raw/agenda_classic.wav
+          test -f android/app/src/main/res/raw/agenda_digital.wav
+          test -f android/app/src/main/res/raw/agenda_soft.wav
+          test -f android/app/src/main/res/raw/agenda_urgent.wav
+
+      - name: Rendi eseguibile Gradle
         run: chmod +x android/gradlew
 
-      - name: Compila APK
+      - name: Compila APK debug
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace
 
-      - name: Carica APK
+      - name: Carica APK scaricabile
         uses: actions/upload-artifact@v4
         with:
-          name: Smart-Agenda-V2.1-APK
+          name: agenda-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
