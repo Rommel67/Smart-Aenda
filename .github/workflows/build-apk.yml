@@ -1,0 +1,45 @@
+name: Build Smart Agenda APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - principale
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica progetto
+        uses: actions/checkout@v4
+
+      - name: Installa Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installa dipendenze
+        run: npm install
+
+      - name: Sincronizza Capacitor Android
+        run: npx cap sync android
+
+      - name: Installa Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Permesso Gradle
+        run: chmod +x android/gradlew
+
+      - name: Compila APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: Carica APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Smart-Agenda-V2.1-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
