@@ -28,12 +28,6 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Aggiungi Android
-        run: npx cap add android
-
-      - name: Sincronizza Capacitor Android
-        run: npx cap sync android
-
       - name: Permesso Gradle
         run: chmod +x android/gradlew
 
